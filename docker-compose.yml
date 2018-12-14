@@ -1,0 +1,58 @@
+version: "3.3"
+
+services:
+  taiga:
+    build: .
+    restart: always
+    container_name: taiga
+    environment:
+      SITE_URI: http://excode.intra.tm:30085
+      ADMIN_EMAIL: excode.intra.tm@gmail.com
+      TAIGA_DB_HOST: taiga_postgres
+      TAIGA_DB_PORT: 5432
+      TAIGA_DB_NAME: taiga
+      TAIGA_DB_USER: taiga
+      TAIGA_DB_PASSWORD: taiga123
+      EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
+      EMAIL_USE_TLS: 1
+      EMAIL_HOST: smtp.gmail.com
+      EMAIL_PORT: 587
+      EMAIL_HOST_USER: excode.intra.tm@gmail.com
+      EMAIL_HOST_PASSWORD: excodeadmin
+      LDAP_SERVER: ldaps://10.45.198.226:636
+      LDAP_PORT: 636
+      LDAP_START_TLS: 'False'
+      LDAP_BIND_DN: cn=swiftldapadmin,ou=serviceAccount,o=Telekom
+      LDAP_BIND_PASSWORD: UbD69dMn
+      LDAP_SEARCH_BASE: ou=users,o=data
+      LDAP_SEARCH_PROPERTY: cn
+      LDAP_SEARCH_SUFFIX: None
+      LDAP_USERNAME_ATTRIBUTE: cn
+      LDAP_EMAIL_PROPERTY: mail
+      LDAP_FULL_NAME_PROPERTY: fullname
+    volumes:
+      - ./media:/opt/taiga/media
+      - ./static:/opt/taiga/static
+    ports:
+      - "30085:80"
+    networks:
+      - taiganet
+    depends_on: 
+      - taiga_postgres
+
+  taiga_postgres:
+    container_name: taiga_postgres
+    image: postgres:9.5.6-alpine
+    environment:
+      POSTGRES_DB: taiga
+      POSTGRES_USER: taiga
+      POSTGRES_PASSWORD: taiga123
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - taiganet
+
+networks:
+  taiganet:
+  
