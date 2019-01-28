@@ -10,7 +10,7 @@ export DJANGO_SECRET_KEY=$(openssl rand -hex 32)
 # Default variables. These shall be overridden :-)
 export DEBUG=${DEBUG:-False}
 export GUNICORN_WORKERS=${GUNICORN_WORKERS:-1}
-export SITE_URI=${SITE_URI:-http://example.com}
+export SITE_URI=${SITE_URI}
 export SITE_FQDN=$(echo $SITE_URI | sed -e "s/[^/]*\/\/\([^@]*@\)\?\([^/]*\).*/\2/")
 [[ "${SITE_URI::5}" == "https" ]] && SITE_SCHEME="https" || SITE_SCHEME="http"
 export SITE_SCHEME
@@ -26,9 +26,9 @@ export TAIGA_DB_NAME=${TAIGA_DB_NAME:-taiga}
 export TAIGA_DB_USER=${TAIGA_DB_USER:-taiga}
 export TAIGA_DB_PASSWORD=${TAIGA_DB_PASSWORD:-mysecretpassword}
 
-export EMAIL_HOST=${EMAIL_HOST:-localhost}
-export EMAIL_HOST_USER=${EMAIL_HOST_USER:-}
-export EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD:-}
+export EMAIL_HOST=${EMAIL_HOST}
+export EMAIL_HOST_USER=${EMAIL_HOST_USER}
+export EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
 export EMAIL_HOST_PORT=${EMAIL_HOST_PORT:-587}
 export EMAIL_USE_TLS=${EMAIL_USE_TLS:-False}
 export EMAIL_BACKEND=${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
