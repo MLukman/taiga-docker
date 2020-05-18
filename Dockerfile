@@ -31,8 +31,11 @@ WORKDIR $DATA
 
 RUN ln -svf /bin/bash /bin/sh
 
+ARG TAIGABACK_VERSION=5.0.12
+ARG TAIGAFRONT_VERSION=5.0.12-stable
+
 # Install taiga-back
-RUN git clone -b stable https://github.com/taigaio/taiga-back.git taiga-back \
+RUN git clone -b $TAIGABACK_VERSION https://github.com/taigaio/taiga-back.git taiga-back \
     && source /usr/share/virtualenvwrapper/virtualenvwrapper.sh \
     && mkvirtualenv -p /usr/bin/python3.5 venvtaiga \
     && workon venvtaiga \
@@ -43,7 +46,7 @@ RUN git clone -b stable https://github.com/taigaio/taiga-back.git taiga-back \
     && deactivate
 
 # Install taiga-front (compiled)
-RUN git clone -b stable https://github.com/taigaio/taiga-front-dist.git taiga-front-dist
+RUN git clone -b $TAIGAFRONT_VERSION https://github.com/taigaio/taiga-front-dist.git taiga-front-dist
 
 USER root
 
