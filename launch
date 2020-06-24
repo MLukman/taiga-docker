@@ -33,7 +33,6 @@ export EMAIL_HOST_PORT=${EMAIL_HOST_PORT:-587}
 export EMAIL_USE_TLS=${EMAIL_USE_TLS:-False}
 export EMAIL_BACKEND=${EMAIL_BACKEND:-django.core.mail.backends.smtp.EmailBackend}
 
-
 # Generate configs based on the template seeds
 envsubst < /tmpl/taiga.tmpl > /etc/nginx/sites-enabled/taiga
 envsubst < /tmpl/circus.ini.tmpl > $DATA/circus.ini
@@ -41,6 +40,27 @@ envsubst < /tmpl/conf.json.tmpl > $DATA/taiga-front-dist/dist/conf.json
 envsubst < /tmpl/local.py.tmpl > $DATA/taiga-back/settings/local.py
 envsubst < /tmpl/already_initialized.tmpl > /already_initialized
 chmod +x /already_initialized
+
+# LDAP support
+#export LDAP_SERVER=${LDAP_SERVER}
+export LDAP_PORT=${LDAP_PORT:-389}
+export LDAP_START_TLS=${LDAP_START_TLS:-False}
+#export LDAP_BIND_DN=${LDAP_BIND_DN}
+#export LDAP_BIND_PASSWORD=${LDAP_BIND_PASSWORD}
+#export LDAP_SEARCH_BASE=${LDAP_SEARCH_BASE}
+export LDAP_USERNAME_ATTRIBUTE=${LDAP_USERNAME_ATTRIBUTE:-cn}
+export LDAP_EMAIL_ATTRIBUTE=${LDAP_EMAIL_ATTRIBUTE:-mail}
+export LDAP_FULL_NAME_ATTRIBUTE=${LDAP_FULL_NAME_ATTRIBUTE:-displayName}
+export LDAP_SEARCH_FILTER_ADDITIONAL=${LDAP_SEARCH_FILTER_ADDITIONAL:-(mail=*)}
+export LDAP_SAVE_LOGIN_PASSWORD=${LDAP_SAVE_LOGIN_PASSWORD:-True}
+
+# Enable LDAP
+if [[ -n $LDAP_SERVER && -n $LDAP_BIND_DN && -n $LDAP_BIND_PASSWORD && -n LDAP_SEARCH_BASE ]]
+then
+  envsubst < /tmpl/local.py.ldap >> $DATA/taiga-back/settings/local.py
+  cat $DATA/taiga-front-dist/dist/conf.json | jq '. + {loginFormType: "ldap"}' -M > $DATA/taiga-front-dist/dist/conf.json
+  unset LDAP_BIND_DN LDAP_BIND_PASSWORD 
+fi
 
 # Keep sensitive information out of here
 unset DJANGO_SECRET_KEY TAIGA_DB_PASSWORD

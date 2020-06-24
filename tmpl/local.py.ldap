@@ -1,0 +1,75 @@
+INSTALLED_APPS += ["taiga_contrib_ldap_auth_ext"]
+
+# TODO https://github.com/Monogramm/taiga-contrib-ldap-auth-ext/issues/16
+LDAP_SERVER = '${LDAP_SERVER}'
+LDAP_PORT = ${LDAP_PORT}
+
+# Flag to enable LDAP with STARTTLS before bind
+LDAP_START_TLS = ${LDAP_START_TLS}
+
+# Support of alternative LDAP ciphersuites
+#from ldap3 import Tls
+#import ssl
+
+#LDAP_TLS_CERTS = Tls(validate=ssl.CERT_NONE, version=ssl.PROTOCOL_TLSv1, ciphers='RSA+3DES')
+
+# Full DN of the service account use to connect to LDAP server and search for login user's account entry
+# If LDAP_BIND_DN is not specified, or is blank, then an anonymous bind is attempated
+LDAP_BIND_DN = '${LDAP_BIND_DN}'
+LDAP_BIND_PASSWORD = '${LDAP_BIND_PASSWORD}'
+
+# Starting point within LDAP structure to search for login user
+LDAP_SEARCH_BASE = '${LDAP_SEARCH_BASE}'
+
+# Additional search criteria to the filter (will be ANDed)
+#LDAP_SEARCH_FILTER_ADDITIONAL = '(mail=*)'
+LDAP_SEARCH_FILTER_ADDITIONAL = '${LDAP_SEARCH_FILTER_ADDITIONAL}'
+
+# Names of attributes to get username, e-mail and full name values from
+# These fields need to have a value in LDAP 
+LDAP_USERNAME_ATTRIBUTE = '${LDAP_USERNAME_ATTRIBUTE}'
+LDAP_EMAIL_ATTRIBUTE = '${LDAP_EMAIL_ATTRIBUTE}'
+LDAP_FULL_NAME_ATTRIBUTE = '${LDAP_FULL_NAME_ATTRIBUTE}'
+
+# Option to not store the passwords in the local db
+LDAP_SAVE_LOGIN_PASSWORD = ${LDAP_SAVE_LOGIN_PASSWORD}
+
+# TODO https://github.com/Monogramm/taiga-contrib-ldap-auth-ext/issues/15
+# Group search filter where $1 is the project slug and $2 is the role slug
+#LDAP_GROUP_SEARCH_FILTER = 'CN=$2,OU=$1,OU=Groups,DC=example,DC=net'
+
+# TODO https://github.com/Monogramm/taiga-contrib-ldap-auth-ext/issues/15
+# Use an attribute in the user entry for membership
+#LDAP_USER_MEMBER_ATTRIBUTE = 'memberof,primaryGroupID'
+
+# TODO https://github.com/Monogramm/taiga-contrib-ldap-auth-ext/issues/15
+# Starting point within LDAP structure to search for login group
+#LDAP_GROUP_SEARCH_BASE = 'OU=Groups,DC=example,DC=net'
+# Group classes filter
+#LDAP_GROUP_FILTER = '(|(objectclass=group)(objectclass=groupofnames)(objectclass=groupofuniquenames))'
+# Group member attribute
+#LDAP_GROUP_MEMBER_ATTRIBUTE = 'memberof,primaryGroupID'
+
+# TODO https://github.com/Monogramm/taiga-contrib-ldap-auth-ext/issues/17
+# Taiga super users group id
+#LDAP_GROUP_ADMIN = 'OU=TaigaAdmin,DC=example,DC=net'
+
+# Fallback on normal authentication method if LDAP auth fails. Uncomment to disable and only allow LDAP login.
+#LDAP_FALLBACK = ""
+
+# Function to map LDAP username to local DB user unique identifier.
+# Upon successful LDAP bind, will override returned username attribute
+# value. May result in unexpected failures if changed after the database
+# has been populated.
+# 
+def _ldap_slugify(uid: str) -> str:
+    # example: force lower-case
+    #uid = uid.lower()
+    return uid
+    
+# To enable the function above, uncomment the line below to store the function in the variable
+#LDAP_MAP_USERNAME_TO_UID = _ldap_slugify
+
+# Similarly, you can apply filters to the email and name by defining functions and specifying them here in the same way
+#LDAP_MAP_EMAIL = _ldap_map_email
+#LDAP_MAP_NAME = _ldap_map_name

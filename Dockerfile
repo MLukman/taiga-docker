@@ -1,5 +1,5 @@
 FROM debian:stretch
-MAINTAINER "Andrey Arapov <andrey.arapov@nixaid.com>"
+MAINTAINER "MLukman <anatilmizun@gmail.com>"
 EXPOSE 80
 
 # To avoid problems with Dialog and curses wizards
@@ -12,7 +12,7 @@ RUN apt-get update \
         libgdbm-dev libncurses5-dev automake libtool libffi-dev curl git \
         tmux gettext python3 python3-dev python3-pip libxml2-dev \
         libxslt-dev virtualenvwrapper libssl1.0-dev \
-        nginx vim && \
+        nginx vim jq && \
         rm -rf -- /var/lib/apt/lists/*
 
 RUN pip3 install circus gunicorn
@@ -31,8 +31,8 @@ WORKDIR $DATA
 
 RUN ln -svf /bin/bash /bin/sh
 
-ARG TAIGABACK_VERSION=5.0.12
-ARG TAIGAFRONT_VERSION=5.0.12-stable
+ARG TAIGABACK_VERSION=5.0.15
+ARG TAIGAFRONT_VERSION=5.0.14-stable
 
 # Install taiga-back
 RUN git clone -b $TAIGABACK_VERSION https://github.com/taigaio/taiga-back.git taiga-back \
@@ -43,6 +43,7 @@ RUN git clone -b $TAIGABACK_VERSION https://github.com/taigaio/taiga-back.git ta
     && pip3 install --upgrade setuptools \
     && pip3 install -r requirements.txt \
     && pip3 install psycopg2-binary \
+    && pip3 install taiga-contrib-ldap-auth-ext \
     && deactivate
 
 # Install taiga-front (compiled)
@@ -53,11 +54,11 @@ USER root
 # Cleanups
 RUN rm -f /etc/nginx/sites-enabled/default
 
-# Copy template seeds
-COPY tmpl/*.tmpl /tmpl/
-
 VOLUME [ "$DATA/static", \
          "$DATA/media" ]
+
+# Copy template seeds
+COPY tmpl/*.* /tmpl/
 
 COPY launch /
 

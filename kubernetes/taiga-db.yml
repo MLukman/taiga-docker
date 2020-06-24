@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: taiga-db
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taiga-db
+  labels:
+    app: taiga-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taiga-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: taiga-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:9.5.6-alpine
+          ports:
+            - containerPort: 5432
+              name: postgres
+          volumeMounts:
+            - name: pvc
+              subPath: taiga-data
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_DB
+              value: taiga
+            - name: POSTGRES_USER
+              value: taiga
+            - name: POSTGRES_PASSWORD
+              value: taiga123
+      volumes:
+        - name: pvc
+          persistentVolumeClaim:
+            claimName: taiga-db
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: taiga-db
+spec:
+  ports:
+  - name: postgres
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app: taiga-db
+  type: ClusterIP
